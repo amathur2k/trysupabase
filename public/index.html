@@ -5,54 +5,161 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Supabase Vector Search App</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        pre {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        .endpoint {
+            background-color: #e9f7fe;
+            border-left: 4px solid #0d6efd;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        code {
+            background-color: #f0f0f0;
+            padding: 2px 4px;
+            border-radius: 4px;
+            color: #d63384;
+        }
+        .nav-tabs .nav-link {
+            font-weight: 500;
+        }
+        .tab-content {
+            padding: 20px;
+            border-left: 1px solid #dee2e6;
+            border-right: 1px solid #dee2e6;
+            border-bottom: 1px solid #dee2e6;
+            border-radius: 0 0 5px 5px;
+        }
+    </style>
 </head>
 <body>
     <div class="container mt-5">
         <h1 class="text-center mb-4">Supabase Vector Search App</h1>
         
-        <div class="row">
-            <div class="col-md-6">
-                <div class="card mb-4">
-                    <div class="card-header bg-primary text-white">
-                        <h3 class="card-title mb-0">Ingest Document</h3>
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="app-tab" data-bs-toggle="tab" data-bs-target="#app" type="button" role="tab" aria-controls="app" aria-selected="true">Application</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="api-tab" data-bs-toggle="tab" data-bs-target="#api" type="button" role="tab" aria-controls="api" aria-selected="false">API Documentation</button>
+            </li>
+        </ul>
+        
+        <div class="tab-content" id="myTabContent">
+            <!-- Application Tab -->
+            <div class="tab-pane fade show active" id="app" role="tabpanel" aria-labelledby="app-tab">
+                <div class="row mt-3">
+                    <div class="col-md-6">
+                        <div class="card mb-4">
+                            <div class="card-header bg-primary text-white">
+                                <h3 class="card-title mb-0">Ingest Document</h3>
+                            </div>
+                            <div class="card-body">
+                                <form id="documentForm">
+                                    <div class="mb-3">
+                                        <label for="heading" class="form-label">Document Heading</label>
+                                        <input type="text" class="form-control" id="heading" placeholder="Enter document heading" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="content" class="form-label">Document Content</label>
+                                        <textarea class="form-control" id="content" rows="5" placeholder="Enter document content" required></textarea>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary w-100">Ingest Document</button>
+                                </form>
+                            </div>
+                        </div>
                     </div>
-                    <div class="card-body">
-                        <form id="documentForm">
-                            <div class="mb-3">
-                                <label for="heading" class="form-label">Document Heading</label>
-                                <input type="text" class="form-control" id="heading" placeholder="Enter document heading" required>
+                    
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header bg-success text-white">
+                                <h3 class="card-title mb-0">Search Documents</h3>
                             </div>
-                            <div class="mb-3">
-                                <label for="content" class="form-label">Document Content</label>
-                                <textarea class="form-control" id="content" rows="5" placeholder="Enter document content" required></textarea>
+                            <div class="card-body">
+                                <form id="searchForm">
+                                    <div class="mb-3">
+                                        <label for="query" class="form-label">Search Query</label>
+                                        <input type="text" class="form-control" id="query" placeholder="Enter search query" required>
+                                    </div>
+                                    <button type="submit" class="btn btn-success w-100">Search</button>
+                                </form>
+                                
+                                <div class="mt-4">
+                                    <h4>Search Results</h4>
+                                    <div id="results" class="mt-3">
+                                        <div class="alert alert-info">Search results will appear here</div>
+                                    </div>
+                                </div>
                             </div>
-                            <button type="submit" class="btn btn-primary w-100">Ingest Document</button>
-                        </form>
+                        </div>
                     </div>
                 </div>
             </div>
             
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header bg-success text-white">
-                        <h3 class="card-title mb-0">Search Documents</h3>
-                    </div>
-                    <div class="card-body">
-                        <form id="searchForm">
-                            <div class="mb-3">
-                                <label for="query" class="form-label">Search Query</label>
-                                <input type="text" class="form-control" id="query" placeholder="Enter search query" required>
-                            </div>
-                            <button type="submit" class="btn btn-success w-100">Search</button>
-                        </form>
+            <!-- API Documentation Tab -->
+            <div class="tab-pane fade" id="api" role="tabpanel" aria-labelledby="api-tab">
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <h4 class="mb-4">Overview</h4>
+                        <p>This API allows you to ingest articles into a Supabase vector database and perform semantic searches using vector embeddings generated by OpenAI.</p>
                         
-                        <div class="mt-4">
-                            <h4>Search Results</h4>
-                            <div id="results" class="mt-3">
-                                <div class="alert alert-info">Search results will appear here</div>
-                            </div>
+                        <h4 class="mt-4 mb-3">Endpoints</h4>
+                        
+                        <div class="endpoint">
+                            <h5>Ingest Document</h5>
+                            <p><strong>POST</strong> /api/documents</p>
+                            <p>Ingests a new document into the vector database.</p>
+                            <h6>Request Body:</h6>
+                            <pre>{
+  "heading": "Document Title",
+  "content": "Document content to be vectorized and stored."
+}</pre>
+                            <h6>Response:</h6>
+                            <pre>{
+  "success": true,
+  "message": "Document ingested successfully",
+  "data": {
+    "id": 123,
+    "heading": "Document Title"
+  }
+}</pre>
                         </div>
+                        
+                        <div class="endpoint">
+                            <h5>Search Documents</h5>
+                            <p><strong>GET</strong> /api/documents/search?query=your search query</p>
+                            <p>Performs a semantic search across all documents.</p>
+                            <h6>Query Parameters:</h6>
+                            <pre>query - The search query to find semantically similar documents</pre>
+                            <h6>Response:</h6>
+                            <pre>{
+  "success": true,
+  "data": [
+    {
+      "id": 123,
+      "heading": "Document Title",
+      "content": "Document content...",
+      "similarity": 0.89
+    },
+    ...
+  ]
+}</pre>
+                        </div>
+                        
+                        <h4 class="mt-4">Sample Usage</h4>
+                        <p>You can use the <code>insert-articles.js</code> script to ingest sample climate change articles:</p>
+                        <pre>node insert-articles.js</pre>
+                        
+                        <h4 class="mt-4">Technology Stack</h4>
+                        <ul>
+                            <li><strong>Supabase:</strong> Vector database with pgvector extension</li>
+                            <li><strong>OpenAI:</strong> API for generating text embeddings</li>
+                            <li><strong>Node.js:</strong> Backend runtime environment</li>
+                            <li><strong>Express:</strong> Web framework for the API</li>
+                        </ul>
                     </div>
                 </div>
             </div>
